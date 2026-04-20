@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BioSwarm-Sense — Simulación Interactiva</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0a0f1e; color: #e0e8f0; font-family: 'Segoe UI', Arial, sans-serif; }
+    h1 { text-align: center; padding: 12px 0 4px; font-size: 1.1rem; letter-spacing: 1px; color: #7ecfff; }
+    .subtitle { text-align: center; font-size: 0.72rem; color: #6a8aaa; margin-bottom: 8px; }
+
+    .layout { display: flex; gap: 10px; padding: 0 10px 10px; }
+    #canvas-wrap { flex: 1; }
+    canvas { display: block; width: 100%; border-radius: 8px; border: 1px solid #1e3050; }
+
+    .panel { width: 220px; display: flex; flex-direction: column; gap: 8px; }
+    .card { background: #0e1828; border: 1px solid #1e3050; border-radius: 8px; padding: 10px 12px; }
+    .card-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: #4a7fa0; margin-bottom: 8px; }
+
+    .ctrl { margin-bottom: 8px; }
+    .ctrl label { display: flex; justify-content: space-between; font-size: 0.72rem; color: #8aafc8; margin-bottom: 3px; }
+    .ctrl label span { color: #fff; font-weight: 600; }
+    input[type=range] { width: 100%; accent-color: #3a9fd5; height: 4px; cursor: pointer; }
+
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat { background: #0a1422; border-radius: 6px; padding: 7px 8px; }
+    .stat-label { font-size: 0.62rem; color: #4a7fa0; }
+    .stat-val { font-size: 1.1rem; font-weight: 700; color: #7ecfff; }
+    .stat-val.danger { color: #ff5555; }
+    .stat-val.warn { color: #ffaa33; }
+
+    .legend { display: flex; flex-direction: column; gap: 5px; }
+    .leg { display: flex; align-items: center; gap: 7px; font-size: 0.68rem; color: #8aafc8; }
+    .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+    button { width: 100%; padding: 7px; border: 1px solid #2a5070; border-radius: 6px;
+             background: #0e1828; color: #7ecfff; font-size: 0.75rem; cursor: pointer; }
+    button:hover { background: #1a2f48; }
+    button.danger { border-color: #50202a; color: #ff6655; }
+    button.danger:hover { background: #2a1020; }
+
+    .chart-wrap { width: 100%; height: 70px; background: #070d18; border-radius: 6px;
+                  border: 1px solid #1e3050; overflow: hidden; position: relative; }
+    #chart { display: block; }
+    .chart-label { position: absolute; top: 3px; left: 6px; font-size: 0.6rem; color: #4a7fa0; }
+    .threshold-label { position: absolute; right: 6px; font-size: 0.6rem; color: #ff8844; }
+  </style>
+</head>
+<body>
+<h1>🐜 BioSwarm-Sense</h1>
+<p class="subtitle">Simulación del protocolo de feromona digital — Monitoreo de Hg²⁺ en ríos amazónicos</p>
+
+<div class="layout">
+  <div id="canvas-wrap">
+    <canvas id="sim" width="760" height="460"></canvas>
+    <div class="chart-wrap" style="margin-top:8px;">
+      <canvas id="chart" width="760" height="70"></canvas>
+      <span class="chart-label">Concentración máxima detectada (µg/L)</span>
+      <span class="threshold-label" id="thr-label"></span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="card">
+      <div class="card-title">Parámetros</div>
+      <div class="ctrl">
+        <label>Nodos <span id="v-nodes">18</span></label>
+        <input type="range" id="r-nodes" min="8" max="36" value="18" />
+      </div>
+      <div class="ctrl">
+        <label>Radio com. <span id="v-radio">100</span>px</label>
+        <input type="range" id="r-radio" min="50" max="200" value="100" />
+      </div>
+      <div class="ctrl">
+        <label>Intensidad Hg²⁺ <span id="v-conc">180</span>µg/L</label>
+        <input type="range" id="r-conc" min="0" max="500" value="180" />
+      </div>
+      <div class="ctrl">
+        <label>Umbral alerta <span id="v-thr">50</span>µg/L</label>
+        <input type="range" id="r-thr" min="10" max="300" value="50" />
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Estado de la red</div>
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-label">Nodos activos</div><div class="stat-val" id="s-active">0</div></div>
+        <div class="stat"><div class="stat-label">En alerta</div><div class="stat-val danger" id="s-alert">0</div></div>
+        <div class="stat"><div class="stat-label">Paquetes TX</div><div class="stat-val" id="s-pkts">0</div></div>
+        <div class="stat"><div class="stat-label">T. detección</div><div class="stat-val warn" id="s-tdet">—</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Leyenda</div>
+      <div class="legend">
+        <div class="leg"><div class="dot" style="background:#2a8a4a"></div>Idle — escucha pasiva</div>
+        <div class="leg"><div class="dot" style="background:#e88c20"></div>Feromona activa</div>
+        <div class="leg"><div class="dot" style="background:#dd3333;border:2px solid #ff7777"></div>Alerta — umbral superado</div>
+        <div class="leg"><div class="dot" style="background:#8844cc"></div>Uplink al gateway</div>
+        <div class="leg"><div class="dot" style="background:#00ccff;border-radius:3px"></div>Gateway (orilla)</div>
+        <div class="leg"><div class="dot" style="background:#ff4444;opacity:.5;border-radius:3px"></div>Pluma Hg²⁺</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Controles</div>
+      <button id="btn-reset" style="margin-bottom:6px">↺ Reiniciar simulación</button>
+      <button id="btn-pause">⏸ Pausar</button>
+    </div>
+  </div>
+</div>
+
+<script src="simulation.js"></script>
+</body>
+</html>

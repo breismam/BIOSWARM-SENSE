@@ -1,0 +1,31 @@
+component,quantity_per_node,unit_cost_usd,total_cost_usd,supplier,part_number,notes
+ESP32-C3 (módulo),1,3.50,3.50,Espressif / AliExpress,ESP32-C3-MINI-1,BLE 5.0 integrado. Ultra bajo consumo.
+Carbono activado funcionalizado (—SH),1,2.00,2.00,Laboratorio interno,BSS-ELEC-SH-01,Síntesis según chemistry/electrode_synthesis.md
+AD7746 capacitance-to-digital,1,4.20,4.20,Analog Devices,AD7746ARUZ,24 bit. I2C. Resolución 4 aF.
+u-blox M8Q GPS module,1,6.50,6.50,u-blox / Mouser,NEO-M8Q-0-10,Power Save Mode < 15 µA promedio.
+Transceptor LoRa SX1276,1,3.80,3.80,Semtech / RYLR890,RYLR890,868 MHz. Alcance > 2 km.
+Piezoeléctrico harvesting (28 mm),1,1.20,1.20,Murata,PKM22EPH4001-B0,Vibración por corriente fluvial.
+Supercapacitor 1F 5V,2,0.60,1.20,Panasonic,EEC-HW0D105,Buffer de energía.
+LiPo 3.7V 500 mAh (respaldo),1,2.50,2.50,Adafruit,1578,Respaldo energético nocturno.
+HDPE flotante (carcasa 80×50 mm),1,1.50,1.50,Fabricación local,BSS-CASE-01,Sellado IP68.
+PCB FR4 (diseño KiCad),1,2.00,2.00,JLCPCB,BSS-PCB-V1,Costo estimado lote de 10 unidades.
+Conector impermeable IP68 (2 pines),2,0.40,0.80,TE Connectivity,1-1827864-2,Para electrodo y amarre.
+Cabo polietileno 5 m (amarre),1,0.80,0.80,Ferretería local,—,Línea de amarre a boya fija.
+Boya HDPE (marcador visual),1,1.50,1.50,Fabricación local,BSS-BUOY-01,Código QR + número de nodo.
+Misceláneos (resistencias, condensadores, conectores),1,1.00,1.00,—,—,Componentes pasivos varios.
+,,,,,, 
+TOTAL POR NODO,,,32.00,,,Estimación USD (Abril 2026)
+,,,,,, 
+GATEWAY (orilla - 1 unidad),,,, ,,
+ESP32-S3 (módulo),1,5.00,5.00,Espressif,ESP32-S3-WROOM-1,WiFi + BLE + mayor RAM.
+Módulo LoRa SX1276 (largo alcance),1,8.00,8.00,Ebyte,E32-868T20D,Antena exterior 3 dBi.
+Panel solar 10W 12V,1,15.00,15.00,Genérico,—,Alimentación continua en campo.
+Batería LiPo 3000 mAh 7.4V,1,12.00,12.00,Genérico,—,Autonomía nocturna / nublado.
+Cargador solar MPPT,1,8.00,8.00,CN3791,—,Maximiza extracción del panel.
+Carcasa ABS exterior IP65,1,10.00,10.00,Hammond,1554B2GYCL,Montaje en poste de orilla.
+Módulo 4G LTE (fallback internet),1,18.00,18.00,SIM7600,—,Fallback si no hay LoRa TTN.
+,,,,,, 
+TOTAL GATEWAY,,,76.00,,,Estimación USD (Abril 2026)
+,,,,,, 
+COSTO SISTEMA PILOTO (18 nodos + 1 gateway),,,652.00,,,Estimación USD (Abril 2026)
+REFERENCIA: estación convencional de monitoreo hídrico,,,2500-8000,,,Para comparación
